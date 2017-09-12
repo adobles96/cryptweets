@@ -1,10 +1,10 @@
 import psycopg2 as pg
 
-TWEET_TABLE_TEMPLATE = '(id_str VARCHAR(20), date_created DATE, text TEXT, user )'
-
-
 class Handler:
-    def __init__(self, db_name, user, password):
+    TWEET_TABLE_TEMPLATE = '(id_str VARCHAR(20) NOT NULL, date_created DATE, text TEXT, user , language TEXT, coordinates, coins, witheld_in_countries)'
+    TWEET_KEYS = ''
+
+    def __init__(self, db_name, user, password=''):
         self.db_name = db_name
         self.user = user
         self.password = password
@@ -55,7 +55,7 @@ class Handler:
             # resets cursor, otherwise any future executes will generate an InternalError
             self.con.rollback()
 
-    def insert_tweet(self, table_name):
+    def insert_tweet(self, table_name, tweet):
         assert(self.cursor_is_active())
         pass
 
@@ -63,5 +63,6 @@ class Handler:
         pass
         # GENERATOR!
 
-    def retrieve_query(self, query):
+    def query(self, table_name, query):
         pass
+        #generator

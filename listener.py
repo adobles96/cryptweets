@@ -19,9 +19,10 @@ class FreqListener(StreamListener):
             #with open('python.json', 'a') as f:
             #    f.write(data)
             print(json.loads(data)['text'])
+            print('retweeted_status' in json.loads(data))
             return True
         except BaseException as e:
-            print("Error on_data: %s" % str(e))
+            print("Error on_data: {}".format(str(e)))
         return True
 
     def on_error(self, status_code):

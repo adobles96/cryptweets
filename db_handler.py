@@ -59,24 +59,16 @@ class Handler:
             # resets cursor, otherwise any future executes will generate an InternalError
             self.con.rollback()
 
-    # def unpack_tweet(tweet):
-    #     '''Receives a tweet and unpacks the relevant information from the json.
-    #     It then returns a VALUES string in valid SQL format. IF ANY CHANGES ARE
-    #     MADE TO THE TWEETS TABLE BE SURE TO CHANGE THIS METHOD!'''
-
     def insert_tweet(self, table_name, tweet, unpacker):
         '''Uses the unpacker function to unpack the tweet (ie to take information
         in tweet and put it in the proper SQL format) and inserts that into the
         table specified by table name. It is important that the unpacker outputs
-        values in a format that matches the columns of the specified table.
-        IMPORTANT: changes to the db won't be commited until the context closes.
-        this means you won't be able to read what you've written within the same context.
-        To change this there's an easy but costly fix. Simply add self.con.commit()
-        after the execute statement.'''
+        values in a format that matches the columns of the specified table.'''
         assert(self.cursor_is_active())
 
         try:
             self.cur.execute('INSERT INTO {} VALUES {}'.format(table_name, unpacker(tweet)))
+            self.con.commit()
         except pg.Error as e:
             print('Failed to insert tweet. Rolling back connection. ERROR:', e)
             # resets cursor, otherwise any future executes will generate an InternalError
@@ -95,12 +87,10 @@ class Handler:
 
     def query(self, query): # This function might be a little dangerous, leaving it in nonetheless
         '''A generator that executes whatever query and yields the esults one by
-        one. IMPORTANT: changes to the db won't be commited until the context closes.
-        this means you won't be able to read what you've written within the same context.
-        To change this there's an easy but costly fix. Simply add self.con.commit()
-        after the execute statement.'''
+        one.'''
         try:
             self.cur.execute(query)
+            self.con.commit()
         except pg.Error as e:
             print('Query failed. Rolling back connection. ERROR:', e)
             # resets cursor, otherwise any future executes will generate an InternalError

@@ -6,10 +6,7 @@ import tweepy
 from listener import FreqListener
 import db_handler as dbh
 import re
-from datetime import datetime
-
-
-
+import datetime
 
 
 auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
@@ -39,18 +36,32 @@ def _start_and_wait_analyzer():
     print("Main: analyzer says its done, lets start again!")
 
 
-def _set_timer():
+def _set_timer(hour=0, minute=0, second=0):
+    """
+    Blocks the calling thread until the time of the day specified by creating a timer and waiting for it to finish
+    return. For example, _set_timer(hour=17) will block the calling function until 5:00pm. If its 4:00pm, it will
+    return at 5:00pm of the same day, if its 6:00om it will return at 5:00pm of the next day.
+    :param hour: hour of the day (0-23)
+    :param minute: minute (0-59)
+    :param second: second (0-59)
+    :return: None
+    """
 
-    def null_funtion():
+    def null_function():
         return
 
-    x = datetime.today()
-    # y = x.replace(day=x.day + 1, hour=1, minute=0, second=0, microsecond=0)
-    y = x.replace(day=x.day, hour=x.hour, minute=x.minute, second=(x.second + 10) % 60, microsecond=x.microsecond)
-    delta_t = y - x
+    now = datetime.datetime.today()
+
+    # Here we set the time of the day we want to wait until.
+    target = now.replace(day=now.day, hour=hour, minute=minute, second=second)
+    if target > now:
+        delta_t = target - now
+    else:
+        delta_t = datetime.timedelta(days=1) - (now - target)
+
+    secs = delta_t.seconds
     print(delta_t)
-    secs = delta_t.seconds + 1
-    t = threading.Timer(secs, null_funtion)
+    t = threading.Timer(secs, null_function)
     t.start()
     t.join()
 
@@ -145,7 +156,7 @@ def run():
                 listener_running = True
 
                 print("Main: Simulating one day")
-                _set_timer()
+                _set_timer(hour=17)
 
                 print("Main: terminating listener")
                 listener.terminate()

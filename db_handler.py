@@ -1,8 +1,9 @@
 import psycopg2 as pg
 
+
 class Handler:
 
-    tweet_table_template = '(id_str VARCHAR(20) NOT NULL, created_at TIME WITH TIME ZONE, text TEXT NOT NULL, user TEXT NOT NULL, retweets INTEGER, coins TEXT, language TEXT, lat REAL, long REAL, witheld_in_countries TEXT)'
+    # tweet_table_template = '(id_str VARCHAR(20) NOT NULL, created_at TIME WITH TIME ZONE, text TEXT NOT NULL, user TEXT NOT NULL, retweets INTEGER, coins TEXT, language TEXT, lat REAL, long REAL, witheld_in_countries TEXT)'
     # Possibly useful in the future: to check an existing table's template use the following query: SELECT (column_name, data_type) FROM information_schema.columns WHERE table_name = 'times_test';
 
     def __init__(self, db_name, user, password='', host='localhost'):
@@ -14,7 +15,7 @@ class Handler:
 
     def __enter__(self):
         try:
-            self.con = pg.connect(dbname=self.db_name, user=self.user, password=self.password, host=self.host) #will possibly need to include host = 'localhost'
+            self.con = pg.connect(dbname=self.db_name, user=self.user, password=self.password, host=self.host)  # will possibly need to include host = 'localhost'
             self.cur = self.con.cursor()
         except pg.Error as e:
             # Perhaps I shouldn't except this error
@@ -67,7 +68,12 @@ class Handler:
         assert(self.cursor_is_active())
 
         try:
+<<<<<<< HEAD
             self.cur.execute('INSERT INTO {} VALUES {}'.format(table_name, unpacker(tweet)))
+=======
+            # self.cur.execute('INSERT INTO {} VALUES {}'.format(table_name, unpacker(tweet)))
+            self.cur.execute('INSERT INTO {} VALUES {}'.format(table_name, unpacker(tweet)[0]), tuple(unpacker(tweet)[1]))
+>>>>>>> 589e1238d33cfdf2fab081832aa3eafd8e476458
             self.con.commit()
         except pg.Error as e:
             print('Failed to insert tweet. Rolling back connection. ERROR:', e)

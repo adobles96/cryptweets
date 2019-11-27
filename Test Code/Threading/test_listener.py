@@ -13,8 +13,12 @@ class TestListenerThread(threading.Thread):
         self.e_wait = e_wait
 
     def run(self):
+
+        self.e_go.wait()
+
         while True:
             if not self.e_go.is_set():
+                print("Listener: Told manager I stopped")
                 self.e_wait.set()
                 self.e_go.wait()
             print("Listener running")
